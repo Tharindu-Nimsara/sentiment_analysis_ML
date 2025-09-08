@@ -1,6 +1,11 @@
 from flask import Flask, render_template,request, redirect
 from helper import preprocessing, vectorizer, get_prediction
 from logger import logging
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -13,13 +18,16 @@ negative = 0
 
 @app.route("/")
 def index():
+    # Get GitHub token from environment
+    github_token = os.getenv('CLASSIC_GITHUB_TOKEN')
+
     data['reviews'] = reviews
     data['positive'] = positive
     data['negative'] = negative
 
     logging.info('========== Open home page ============')
 
-    return render_template('index.html', data=data)
+    return render_template('index.html', data=data, github_token=github_token)
 
 @app.route("/", methods = ['post'])
 def my_post():

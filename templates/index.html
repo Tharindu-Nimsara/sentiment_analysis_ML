@@ -4,46 +4,508 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"></link>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>App</title>
+    <style>
+        /* Product Card Styles */
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 400px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Product Image */
+        .product-image-container {
+            position: relative;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .product-image {
+            width: 100%;
+            max-width: 250px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .product-image:hover {
+            transform: scale(1.05);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Product Info */
+        .product-info {
+            padding: 24px;
+        }
+
+        .product-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0 0 12px 0;
+            line-height: 1.3;
+        }
+
+        .product-description {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0 0 16px 0;
+        }
+
+        /* Rating */
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: #ddd;
+            font-size: 1.2rem;
+        }
+
+        .star.filled {
+            color: #f39c12;
+        }
+
+        .rating-text {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Pricing */
+        .product-pricing {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .current-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #27ae60;
+        }
+
+        .original-price {
+            font-size: 1.1rem;
+            color: #95a5a6;
+            text-decoration: line-through;
+        }
+
+        .discount {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Features */
+        .product-features {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-icon {
+            font-size: 1.1rem;
+        }
+
+        .feature-text {
+            color: #34495e;
+            font-size: 0.9rem;
+        }
+
+        /* Action Buttons */
+        .product-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #2980b9, #21618c);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+            flex: 0.6;
+        }
+
+        .btn-outline:hover {
+            background: #e74c3c;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .product-card {
+                max-width: 100%;
+                margin: 0 16px;
+            }
+            
+            .product-actions {
+                flex-direction: column;
+            }
+            
+            .btn-outline {
+                flex: 1;
+            }
+        }
+        </style>
 </head>
 <body>
+    <script>
+        // GitHub AI Model Configuration
+        const GITHUB_TOKEN = '{{ github_token }}'; // Replace with your GitHub token
+        const GITHUB_AI_ENDPOINT = 'https://models.github.ai/inference';
+        const MODEL_NAME = 'openai/gpt-4o'; 
+
+        /**
+         * Sends reviews to GitHub AI Models API and gets a summary
+         */
+        async function summarizeReviews(reviews, githubToken = GITHUB_TOKEN) {
+            try {
+                if (!reviews || reviews.length === 0) {
+                    throw new Error('No reviews provided');
+                }
+                
+                if (!githubToken || githubToken === 'your-github-token-here') {
+                    throw new Error('Please set your GitHub token with models:read permissions');
+                }
+
+                // Prepare the reviews text
+                const reviewsText = reviews
+                    .map((review, index) => `Review ${index + 1}: ${review}`)
+                    .join('\n\n');
+
+                // Create the prompt
+                const prompt = `Make a short summary using these reviews:\n\n${reviewsText}`;
+
+                // Prepare the API request body
+                const requestBody = {
+                    messages: [
+                        { 
+                            role: "system", 
+                            content: "You are a helpful assistant that creates concise summaries of customer reviews." 
+                        },
+                        { 
+                            role: "user", 
+                            content: prompt 
+                        }
+                    ],
+                    model: MODEL_NAME,
+                    max_tokens: 300,
+                    temperature: 0.7
+                };
+
+                // Make the API call to GitHub AI Models
+                const response = await fetch(`${GITHUB_AI_ENDPOINT}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${githubToken}`,
+                        'User-Agent': 'GitHubModelClient/1.0'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    let errorMessage = `GitHub AI API error: ${response.status} ${response.statusText}`;
+                    
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.error && errorData.error.message) {
+                            errorMessage = `GitHub AI API error: ${errorData.error.message}`;
+                        }
+                    } catch (e) {
+                        // If we can't parse error response, use the status text
+                    }
+                    
+                    if (response.status === 401) {
+                        errorMessage = 'Unauthorized: Please check your GitHub token has models:read permissions';
+                    }
+                    
+                    throw new Error(errorMessage);
+                }
+
+                const data = await response.json();
+                
+                // Check for unexpected response format
+                if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+                    throw new Error('Unexpected response format from GitHub AI API');
+                }
+
+                const summary = data.choices[0].message.content?.trim();
+                
+                if (!summary) {
+                    throw new Error('No summary received from GitHub AI Models');
+                }
+
+                return summary;
+
+            } catch (error) {
+                console.error('Error summarizing reviews:', error);
+                throw error;
+            }
+        }
+
+        /**
+         * Collects reviews from the DOM and sends to GitHub AI Models
+         */
+        async function getSummary() {
+            let para = document.getElementById("summaryPara");
+            
+            // Collect reviews from the DOM
+            const reviewElements = document.querySelectorAll('.commented-section span');
+            const reviews = Array.from(reviewElements).map(element => element.textContent.trim());
+            
+            let reviewCount = reviews.length;
+
+            if (reviewCount < 5) {
+                para.innerHTML = "Insufficient review count! (5 reviews minimum)";
+                para.style.color = "#d32f2f";
+            } else {
+                try {
+                    // Show loading message
+                    para.innerHTML = "🤖 Generating AI summary using GitHub Models... Please wait.";
+                    para.style.color = "#666";
+                    para.style.fontStyle = "italic";
+
+                    // Get summary from GitHub AI Models
+                    const summary = await summarizeReviews(reviews);
+
+                    // Display the summary
+                    para.innerHTML = `<strong>AI Summary:</strong><br><br>${summary}`;
+                    para.style.color = "#333";
+                    para.style.fontStyle = "normal";
+                    para.style.fontWeight = "normal";
+                    para.style.lineHeight = "1.6";
+
+                } catch (error) {
+                    // Handle errors with more specific messaging
+                    let errorMessage = error.message;
+                    
+                    if (error.message.includes('Unauthorized')) {
+                        errorMessage = 'Authentication failed. Please ensure your GitHub token has "models:read" permissions.';
+                    } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                        errorMessage = 'Network error. Please check your internet connection and try again.';
+                    }
+
+                    para.innerHTML = `<strong>Error:</strong><br>${errorMessage}`;
+                    para.style.color = "#d32f2f";
+                    para.style.fontStyle = "normal";
+                    para.style.fontWeight = "normal";
+                }
+            }
+        }
+
+        /**
+         * Alternative function if you have the data object available globally
+         */
+        async function getSummaryFromData() {
+            let para = document.getElementById("summaryPara");
+            
+            // Check if data object exists and has reviews
+            if (typeof data !== 'undefined' && data.reviews) {
+                let reviewCount = data.reviews.length;
+
+                if (reviewCount < 5) {
+                    para.innerHTML = "Insufficient review count! (5 reviews minimum)";
+                    para.style.color = "#d32f2f";
+                } else {
+                    try {
+                        para.innerHTML = "🤖 Generating AI summary using GitHub Models... Please wait.";
+                        para.style.color = "#666";
+                        para.style.fontStyle = "italic";
+
+                        const summary = await summarizeReviews(data.reviews);
+                        
+                        para.innerHTML = `<strong>AI Summary:</strong><br><br>${summary}`;
+                        para.style.color = "#333";
+                        para.style.fontStyle = "normal";
+                    } catch (error) {
+                        para.innerHTML = `<strong>Error:</strong><br>${error.message}`;
+                        para.style.color = "#d32f2f";
+                    }
+                }
+            } else {
+                // Fallback to collecting from DOM
+                await getSummary();
+            }
+        }
+
+        // Optional: Test connection function
+        async function testGitHubConnection() {
+            try {
+                const response = await fetch(`${GITHUB_AI_ENDPOINT}/models`, {
+                    headers: {
+                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                        'User-Agent': 'GitHubModelClient/1.0'
+                    }
+                });
+                
+                if (response.ok) {
+                    console.log('✅ GitHub AI Models connection successful');
+                    return true;
+                } else {
+                    console.error('❌ GitHub AI Models connection failed:', response.status);
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ GitHub AI Models connection error:', error);
+                return false;
+            }
+        }
+    </script>
+
     <div style="display:flex; flex-direction:row; justify-content: space-around; margin-top: 50px; ">
-    <div class="split left">
-        <div class="centered">
-            <img   src="../static/products/prod1.jpg" width="400px" height="auto" alt="">
-        </div>
-    </div>
-
-
-    <div class="split right">
-        <div class="container mt-5 mb-5">
-            <div class="d-flex justify-content-center row">
-                <div class="d-flex flex-column col-md-8" style="width: 500px; height: auto;">
-                    <div>
-                        <label for="">Positive Sentiments : {{ data.positive }}</label>
+        <div class="split left">
+            <div class="centered">
+                <!-- Product Card -->
+                <div class="product-card">
+                    <!-- Product Image -->
+                    <div class="product-image-container">
+                        <img src="../static/products/headphone.jpg" alt="Product Image" class="product-image">
+                        <div class="product-badge">New</div>
                     </div>
-                    <div>
-                        <label for="">Negative Sentiments : {{ data.negative }}</label>
-                    </div>
-                    <div>
-                        <form method="post">
-                          <textarea style="width: 300px; height: 100px; margin: 20px 0px ;" name="text"></textarea>
-                          <input style="color:white; background-color: green; border: none; width: auto; height: auto; border-radius: 3px; display: block;" type="submit">
-                        </form>
-                    </div>
-
-                    <div class="coment-bottom bg-white p-3 px-4">
-                        {% for review in data.reviews %}
-                            <div class="commented-section mt-2 mb-2 p-2" style="border-bottom: 1px solid #eee;">
-                                <span style="font-size:1.2rem; color:#222;">{{ review }}</span>
+                    
+                    <!-- Product Info -->
+                    <div class="product-info">
+                        <h2 class="product-title">Premium Wireless Headphones</h2>
+                        <p class="product-description">
+                            High-quality wireless headphones with noise cancellation and premium sound quality. 
+                            Perfect for music lovers and professionals.
+                        </p>
+                        
+                        <!-- Product Price -->
+                        <div class="product-pricing">
+                            <span class="current-price">$89.99</span>
+                            <span class="original-price">$119.99</span>
+                            <span class="discount">25% OFF</span>
+                        </div>
+                        
+                        <!-- Product Features -->
+                        <div class="product-features">
+                            <div class="feature">
+                                <span class="feature-icon">🎵</span>
+                                <span class="feature-text">Premium Sound</span>
                             </div>
-                        {% endfor %}
+                            <div class="feature">
+                                <span class="feature-icon">🔇</span>
+                                <span class="feature-text">Noise Cancelling</span>
+                            </div>
+                            <div class="feature">
+                                <span class="feature-icon">🔋</span>
+                                <span class="feature-text">30H Battery</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                            <button class="btn btn-outline wishlist">♡ Wishlist</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="split right">
+            <div class="container mt-5 mb-5">
+                <div class="d-flex justify-content-center row">
+                    <div class="d-flex flex-column col-md-8" style="width: 500px; height: auto;">
+                        <div>
+                            <h3 style="color: white;">ML Model Output</h3>
+                            <label for="">Positive Sentiments : {{ data.positive }}</label>
+                        </div>
+                        <div>
+                            <label for="">Negative Sentiments : {{ data.negative }}</label>
+                        </div>
+                        <div>
+                            <form method="post">
+                                <textarea style="width: 400px; height: 100px; margin: 20px 0px ;" name="text" placeholder=" Enter your review here"></textarea>
+                                <input style="color:white; background-color: green; border: none; width: auto; height: auto; border-radius: 3px; display: block; padding: 5px 10px 5px 10px;" type="submit">
+                            </form>
+                        </div>
+
+                        <div class="coment-bottom bg-white p-3 px-4">
+                            {% for review in data.reviews %}
+                                <div class="commented-section mt-2 mb-2 p-2" style="border-bottom: 1px solid #afacac;">
+                                    <span style="font-size:1.2rem; color:#222;">{{ review }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="" style="margin-top: 10px;">
+                            <input type="button" onclick="getSummary()" style="width: auto; color: white; background-color: purple; border: none; padding: 5px 10px 5px 10px; border-radius: 3px;" value="Get AI Summary">
+                            <div style="width: 400px; height: auto; margin-top: 10px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                <p id="summaryPara" style="margin: 0; min-height: 20px; line-height: 1.6;"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
