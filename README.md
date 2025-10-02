@@ -45,7 +45,7 @@ Existing solutions often struggle with **scalability** and **usability**. This p
      - Vectorization  
 
 3. **Model Training & Evaluation**  
-   - Tested 5 ML models with hyperparameter tuning  
+   - Tested 5 ML models
    - Evaluated using **accuracy, precision, recall, F1-score**  
    - Used **5-fold cross-validation** to ensure generalization  
    - Selected **Logistic Regression** as the best-performing model  
