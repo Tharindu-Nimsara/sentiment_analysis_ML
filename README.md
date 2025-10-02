@@ -94,9 +94,9 @@ Additionally, summarization performance was evaluated through response time, rel
 ---
 
 ## 👨‍💻 Contributions  
-- **Anushka** – Group Leader, ML Model Evaluation, Documentation  
-- **Tharindu** – ML Model Development, Backend Development  
-- **Lisara** – ML Model Evaluation, Frontend Development, Documentation  
+- **M.A.O. Rodrigo** – Group Leader, ML Model Evaluation, Documentation  
+- **W.M.T.N. Waidyathilake** – ML Model Development, Backend Development  
+- **G.A.L.H. Seneviratne** – ML Model Evaluation, Frontend Development, Documentation  
 
 ---
 
@@ -125,8 +125,8 @@ pip install -r requirements.txt
 ```
 
 ### Running the Application
-
-# Start Flask app
+```bash
 python app.py
 
 Then open http://127.0.0.1:5000/ in your browser.
+```
